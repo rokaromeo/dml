@@ -45,4 +45,20 @@ final class SelectTest extends TestCase
         $select->setFields('foo');
         $select->getField(1);
     }
+
+    public function testFrom(): void
+    {
+        $select = new Select();
+        $select->from('foo');
+        $this->assertSame('foo', $select->getFrom());
+    }
+
+    public function testFrom_Exception_ZeroLengthFrom(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length FROM');
+
+        $select = new Select();
+        $select->from('');
+    }
 }

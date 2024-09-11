@@ -5,6 +5,7 @@ namespace Roka\DML;
 final class Select
 {
     protected array $fields = ['*'];
+    protected string $from;
 
     public function setFields(string ...$fields): self
     {
@@ -30,5 +31,20 @@ final class Select
         }
 
         return $this->getFields()[$field_id];
+    }
+
+    public function from(string $from): self
+    {
+        if (strlen($from) === 0) {
+            throw new SelectException('Zero length FROM');
+        }
+
+        $this->from = $from;
+        return $this;
+    }
+
+    public function getFrom(): string
+    {
+        return $this->from;
     }
 }
