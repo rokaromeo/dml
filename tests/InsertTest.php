@@ -9,11 +9,21 @@ final class InsertTest extends TestCase
     public function testDefaults(): void
     {
         $insert = new Insert();
+        $this->assertSame(false, $insert->isIgnored());
         $this->assertSame([], $insert->getFields());
         $this->assertSame(false, $insert->hasField());
         $this->assertSame(false, $insert->hasField('foo'));
         $this->assertSame([], $insert->getValues());
         $this->assertSame(0, $insert->getRowCount());
+    }
+
+    public function testIgnore(): void
+    {
+        $insert = new Insert();
+        $insert->ignore();
+        $this->assertSame(true, $insert->isIgnored());
+        $insert->doNotIgnore();
+        $this->assertSame(false, $insert->isIgnored());
     }
 
     public function testTable(): void
@@ -125,5 +135,26 @@ final class InsertTest extends TestCase
 
         $insert = new Insert();
         $insert->onDuplicateKeyUpdate('foo');
+    }
+
+    public function testGetSQL(): void
+    {
+        $insert = new Insert();
+        $insert->table('foo');
+        $insert->setValues(['foo' => 'bar']);
+        $this->assertSame('INSERT INTO `foo` (`foo`) VALUES (:foo)', $insert->getSQL());
+
+        $insert->ignore();
+        $insert->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
+        $this->assertSame('INSERT IGNORE INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice)', $insert->getSQL());
+
+        $insert = new Insert();
+        $insert->table('foo');
+        $insert->setValues([
+                    ['foo' => 'bar',          'Alice' => 'Bob'],
+                    ['foo' => 'row2_column1', 'Alice' => 'row2_column2']
+                ]);
+        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo1, :Alice1)', $insert->getSQL());
+
     }
 }

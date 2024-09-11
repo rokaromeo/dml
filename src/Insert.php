@@ -4,10 +4,28 @@ namespace Roka\DML;
 
 final class Insert
 {
+    protected bool $ignore = false;
     protected string $table;
     protected array $fields = [];
     protected array $values = [];
     protected array $on_duplicate_key_update = [];
+
+    public function ignore(): self
+    {
+        $this->ignore = true;
+        return $this;
+    }
+
+    public function doNotIgnore(): self
+    {
+        $this->ignore = false;
+        return $this;
+    }
+
+    public function isIgnored(): bool
+    {
+        return $this->ignore;
+    }
 
     public function table(string $table): self
     {
@@ -113,5 +131,28 @@ final class Insert
     public function getOnDuplicateKeyUpdate(): array
     {
         return $this->on_duplicate_key_update;
+    }
+
+    public function getSQL(): string
+    {
+        $SQL = [];
+
+        if ($this->isIgnored()) {
+            $SQL[] = sprintf('INSERT IGNORE INTO `%s` ', $this->getTable());
+        } else {
+            $SQL[] = sprintf('INSERT INTO `%s` ', $this->getTable());
+        }
+
+        $SQL[] = sprintf('(`%s`) ', implode('`, `', $this->getFields()));
+        $SQL[] = 'VALUES ';
+
+        $rows = [sprintf('(:%s)', implode(', :', $this->getFields()))];
+        for ($i = 1; $i < $this->getRowCount(); $i++) {
+            $rows[$i] = sprintf('(:%s%d)', implode(sprintf('%d, :', $i), $this->getFields()), $i);
+        }
+
+        $SQL[] = implode(', ', $rows);
+
+        return implode('', $SQL);
     }
 }
