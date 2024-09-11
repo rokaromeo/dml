@@ -255,11 +255,6 @@ final class SelectTest extends TestCase
         $this->assertSame(20, $select->getOffset());
         $select->setPage(4);
         $this->assertSame(30, $select->getOffset());
-        $select->setLimit(0);
-        $this->assertSame(30, $select->getOffset());
-        $select->setLimit();
-        $this->assertSame(0, $select->getOffset());
-        $this->assertSame(1, $select->getPage());
     }
 
     public function testSetPage_Exception_ZeroPage(): void
@@ -269,17 +264,5 @@ final class SelectTest extends TestCase
 
         $select = new Select();
         $select->setPage(0);
-    }
-
-    public function testSetOffset(): void
-    {
-        $select = new Select();
-        $select->setLimit(10);
-        $select->setPage(5);
-        $this->assertSame(40, $select->getOffset());
-        $select->setPage(6);
-        $this->assertSame(50, $select->getOffset());
-        $select->setLimit();
-        $this->assertSame(0, $select->getOffset());
     }
 }

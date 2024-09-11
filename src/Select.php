@@ -12,6 +12,7 @@ final class Select
     protected string $having;
     protected string $order_by;
     protected ?int $limit = null;
+    protected int $offset = 0;
     protected int $page = 1;
 
     public function setFields(string ...$fields): self
@@ -165,10 +166,6 @@ final class Select
             throw new SelectException('Negative LIMIT');
         }
 
-        if ($limit === null) {
-            $this->setPage();
-        }
-
         $this->limit = $limit;
         return $this;
     }
@@ -183,6 +180,20 @@ final class Select
         return $this->getLimit() !== null;
     }
 
+    public function setOffset(int $offset = 0): self
+    {
+        if ($offset < 0) {
+            throw new SelectException('Negative OFFSEt');
+        }
+
+        return $this;
+    }
+
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
+
     public function setPage(int $page = 1): self
     {
         if ($page < 1) {
@@ -190,16 +201,15 @@ final class Select
         }
 
         $this->page = $page;
+        if ($this->hasLimit()) {
+            $this->offset = (int) $this->getLimit() * ($this->getPage() - 1);
+        }
+
         return $this;
     }
 
     public function getPage(): int
     {
         return $this->page;
-    }
-
-    public function getOffset(): int
-    {
-        return (int) $this->getLimit() * ($this->getPage() - 1);
     }
 }
