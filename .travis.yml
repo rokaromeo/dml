@@ -1,10 +1,10 @@
-dist: jammy
-
 language: php
+os: linux
+dist: jammy
 
 php:
   - 8.3
 
 install: composer install --no-progress --no-interaction --no-suggest
 
-script: ./vendor/bin/phpunit
+script: ./vendor/bin/phpunit --no-progress --coverage-clover build/clover.xml
