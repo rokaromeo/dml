@@ -71,6 +71,15 @@ final class SelectTest extends TestCase
         $this->assertSame(['foo', 'bar'], $select->getJoins());
     }
 
+    public function testJoin_Exception_ZeroLengthJoin(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length JOIN');
+
+        $select = new Select();
+        $select->join('');
+    }
+
     public function testLeftJoin(): void
     {
         $select = new Select();
@@ -78,6 +87,33 @@ final class SelectTest extends TestCase
         $this->assertSame(['foo'], $select->getJoins());
         $select->leftJoin('bar');
         $this->assertSame(['foo', 'bar'], $select->getJoins());
+    }
+
+    public function testLeftJoin_Exception_ZeroLengthJoin(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length LEFT JOIN');
+
+        $select = new Select();
+        $select->leftJoin('');
+    }
+
+    public function testRightJoin(): void
+    {
+        $select = new Select();
+        $select->rightJoin('foo');
+        $this->assertSame(['foo'], $select->getJoins());
+        $select->rightJoin('bar');
+        $this->assertSame(['foo', 'bar'], $select->getJoins());
+    }
+
+    public function testRightJoin_Exception_ZeroLengthJoin(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length RIGHT JOIN');
+
+        $select = new Select();
+        $select->rightJoin('');
     }
 
     public function testGetJoin(): void

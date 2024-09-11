@@ -51,12 +51,30 @@ final class Select
 
     public function join(string $join): self
     {
+        if (strlen($join) === 0) {
+            throw new SelectException('Zero length JOIN');
+        }
+
         $this->joins[] = $join;
         return $this;
     }
 
     public function leftJoin(string $join): self
     {
+        if (strlen($join) === 0) {
+            throw new SelectException('Zero length LEFT JOIN');
+        }
+
+        $this->joins[] = $join;
+        return $this;
+    }
+
+    public function rightJoin(string $join): self
+    {
+        if (strlen($join) === 0) {
+            throw new SelectException('Zero length RIGHT JOIN');
+        }
+
         $this->joins[] = $join;
         return $this;
     }
