@@ -2,6 +2,9 @@ language: php
 os: linux
 dist: jammy
 
+env:
+  - XDEBUG_MODE=coverage
+
 php:
   - 8.3
 
