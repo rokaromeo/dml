@@ -1,0 +1,21 @@
+{
+    "name": "roka/dml",
+    "description": "MySQL DML implementation for fun.",
+    "require-dev": {
+        "phpunit/phpunit": "^11.3"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Roka\\DML\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Romeo Roka",
+            "email": "117194635+rokaromeo@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
