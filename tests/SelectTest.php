@@ -19,9 +19,10 @@ final class SelectTest extends TestCase
         $this->assertSame(['foo', 'bar'], $select->getFields());
     }
 
-    public function testSetFieldsZeroLength(): void
+    public function testSetFields_Exception_ZeroLengthField(): void
     {
         $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length field: "1"');
 
         $select = new Select();
         $select->setFields('foo', '');
@@ -35,11 +36,13 @@ final class SelectTest extends TestCase
         $this->assertSame('bar', $select->getField(1));
     }
 
-    public function testGetFieldNotSet(): void
+    public function testGetField_Exception_FieldNotSet(): void
     {
         $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Field not set: "1"');
 
         $select = new Select();
+        $select->setFields('foo');
         $select->getField(1);
     }
 }

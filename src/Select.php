@@ -8,9 +8,9 @@ final class Select
 
     public function setFields(string ...$fields): self
     {
-        foreach ($fields as $field) {
+        foreach ($fields as $key => $field) {
             if (strlen($field) === 0) {
-                throw new SelectException('Zero length field');
+                throw new SelectException(sprintf('Zero length field: "%d"', $key));
             }
         }
 
@@ -26,7 +26,7 @@ final class Select
     public function getField(int|string $field_id): string
     {
         if (! array_key_exists($field_id, $this->getFields())) {
-            throw new SelectException(sprintf('Field id is not set: "%s"', $field_id));
+            throw new SelectException(sprintf('Field not set: "%s"', $field_id));
         }
 
         return $this->getFields()[$field_id];
