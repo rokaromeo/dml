@@ -64,9 +64,17 @@ final class Insert
         return $this;
     }
 
-    public function getValues(): array
+    public function getValues(int $row_index = null): array
     {
-        return $this->values;
+        if ($row_index === null) {
+            return $this->values;
+        }
+
+        if (! array_key_exists($row_index, $this->values)) {
+            throw new InsertException(sprintf('Row is not set: "%d"', $row_index));
+        }
+
+        return $this->values[$row_index];
     }
 
     public function getRowCount(): int

@@ -63,11 +63,13 @@ final class InsertTest extends TestCase
         $insert = new Insert();
         $insert->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
         $this->assertSame([['foo' => 'bar', 'Alice' => 'Bob']], $insert->getValues());
+        $this->assertSame(['foo' => 'bar', 'Alice' => 'Bob'], $insert->getValues(0));
         $this->assertSame(1, $insert->getRowCount());
 
         // Overwrite
         $insert->setValues(['foo' => 'row2_column1', 'Alice' => 'row2_column2']);
         $this->assertSame([['foo' => 'row2_column1', 'Alice' => 'row2_column2']], $insert->getValues());
+        $this->assertSame(['foo' => 'row2_column1', 'Alice' => 'row2_column2'], $insert->getValues(0));
         $this->assertSame(['foo', 'Alice'], $insert->getFields());
         $this->assertSame(1, $insert->getRowCount());
 
@@ -80,7 +82,18 @@ final class InsertTest extends TestCase
                     ['foo' => 'bar',          'Alice' => 'Bob'],
                     ['foo' => 'row2_column1', 'Alice' => 'row2_column2']
                 ], $insert->getValues());
+        $this->assertSame(['foo' => 'bar',          'Alice' => 'Bob'], $insert->getValues(0));
+        $this->assertSame(['foo' => 'row2_column1', 'Alice' => 'row2_column2'], $insert->getValues(1));
         $this->assertSame(['foo', 'Alice'], $insert->getFields());
         $this->assertSame(2, $insert->getRowCount());
+    }
+
+    public function testGetValues_Exception_RowIsNotSet(): void
+    {
+        $this->expectException(InsertException::class);
+        $this->expectExceptionMessage('Row is not set: "0"');
+
+        $insert = new Insert();
+        $insert->getValues(0);
     }
 }
