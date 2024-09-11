@@ -83,24 +83,21 @@ final class Insert
         return count($this->values);
     }
 
-    public function onDuplicateKeyUpdateFields(string ...$fields): self
+    public function onDuplicateKeyUpdate(string|array $field, string ...$fields): self
     {
         $this->on_duplicate_key_update = [];
 
-        foreach ($fields as $field) {
-            if (! $this->hasField($field)) {
-                throw new InsertException(sprintf('Field is not set: "%s"', $field));
+        if (is_string($field)) {
+            $fields = [$field, ...$fields];
+            $fields_and_values = [];
+            foreach ($fields as $field) {
+                $fields_and_values[$field] = sprintf('values(`%s`)', $field);
             }
-
-            $this->on_duplicate_key_update[$field] = null;
         }
 
-        return $this;
-    }
-
-    public function onDuplicateKeyUpdateValues(array $fields_and_values): self
-    {
-        $this->on_duplicate_key_update = [];
+        if (is_array($field)) {
+            $fields_and_values = $field;
+        }
 
         foreach ($fields_and_values as $field => $value) {
             if (! $this->hasField($field)) {

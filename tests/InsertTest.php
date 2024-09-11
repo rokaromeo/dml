@@ -97,45 +97,33 @@ final class InsertTest extends TestCase
         $insert->getValues(0);
     }
 
-    public function testOnDuplicateKeyUpdateFields(): void
+    public function testOnDuplicateKeyUpdate(): void
     {
         $insert = new Insert();
         $insert->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
-        $insert->onDuplicateKeyUpdateFields('foo');
-        $this->assertSame(['foo' => null], $insert->getOnDuplicateKeyUpdate());
-        $insert->onDuplicateKeyUpdateFields('Alice');
-        $this->assertSame(['Alice' => null], $insert->getOnDuplicateKeyUpdate());
-        $insert->onDuplicateKeyUpdateFields('foo', 'Alice');
-        $this->assertSame(['foo' => null, 'Alice' => null], $insert->getOnDuplicateKeyUpdate());
-    }
+        $insert->onDuplicateKeyUpdate('foo');
+        $this->assertSame(['foo' => 'values(`foo`)'], $insert->getOnDuplicateKeyUpdate());
+        $insert->onDuplicateKeyUpdate('Alice');
+        $this->assertSame(['Alice' => 'values(`Alice`)'], $insert->getOnDuplicateKeyUpdate());
+        $insert->onDuplicateKeyUpdate('foo', 'Alice');
+        $this->assertSame(['foo' => 'values(`foo`)', 'Alice' => 'values(`Alice`)'], $insert->getOnDuplicateKeyUpdate());
 
-    public function testOnDuplicateKeyUpdateFields_Exception_FieldNotSet(): void
-    {
-        $this->expectException(InsertException::class);
-        $this->expectExceptionMessage('Field is not set: "foo"');
-
-        $insert = new Insert();
-        $insert->onDuplicateKeyUpdateFields('foo');
-    }
-
-    public function testOnDuplicateKeyUpdateValues(): void
-    {
         $insert = new Insert();
         $insert->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
-        $insert->onDuplicateKeyUpdateValues(['foo' => 'BAR']);
+        $insert->onDuplicateKeyUpdate(['foo' => 'BAR']);
         $this->assertSame(['foo' => 'BAR'], $insert->getOnDuplicateKeyUpdate());
-        $insert->onDuplicateKeyUpdateValues(['Alice' => 'BOB']);
+        $insert->onDuplicateKeyUpdate(['Alice' => 'BOB']);
         $this->assertSame(['Alice' => 'BOB'], $insert->getOnDuplicateKeyUpdate());
-        $insert->onDuplicateKeyUpdateValues(['foo' => 'BAR', 'Alice' => 'BOB']);
+        $insert->onDuplicateKeyUpdate(['foo' => 'BAR', 'Alice' => 'BOB']);
         $this->assertSame(['foo' => 'BAR', 'Alice' => 'BOB'], $insert->getOnDuplicateKeyUpdate());
     }
 
-    public function testOnDuplicateKeyUpdateValues_Exception_FieldNotSet(): void
+    public function testOnDuplicateKeyUpdate_Exception_FieldNotSet(): void
     {
         $this->expectException(InsertException::class);
         $this->expectExceptionMessage('Field is not set: "foo"');
 
         $insert = new Insert();
-        $insert->onDuplicateKeyUpdateValues(['foo' => 'BAR']);
+        $insert->onDuplicateKeyUpdate('foo');
     }
 }
