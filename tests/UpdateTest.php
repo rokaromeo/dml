@@ -32,24 +32,36 @@ final class UpdateTest extends TestCase
 
     public function testSetValue(): void
     {
-        $update = new Update();
-        $update->setValue('foo', 'bar');
-        $this->assertSame(['foo' => 'bar'], $update->getValues());
-        $update->setValue('foo2', 'bar2');
-        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $update->getValues());
-
-        $update = new Update();
-        $update->setValue(['foo' => 'bar', 'foo2' => 'bar2']);
-        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $update->getValues());
+        $replace = new Replace();
+        $replace->setValue('foo', 'bar');
+        $this->assertSame(['foo' => 'bar'], $replace->getValues());
+        $replace->setValue('foo2', 'bar2');
+        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
     }
 
-    public function testGetValue_Exception_FieldNotSet(): void
+    public function testSetValue_Exception_ZeroLengthFieldName(): void
     {
-        $this->expectException(UpdateException::class);
-        $this->expectExceptionMessage('Field not set: "foo"');
+        $this->expectException(ReplaceException::class);
+        $this->expectExceptionMessage('Zero length field name');
 
-        $update = new Update();
-        $update->getValue('foo');
+        $replace = new Replace();
+        $replace->setValue('', 'bar');
+    }
+
+    public function testSetValues(): void
+    {
+        $replace = new Replace();
+        $replace->setValues(['foo' => 'bar', 'foo2' => 'bar2']);
+        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
+    }
+
+    public function testSetValues_Exception_ZeroLengthFieldName(): void
+    {
+        $this->expectException(ReplaceException::class);
+        $this->expectExceptionMessage('Zero length field name');
+
+        $replace = new Replace();
+        $replace->setValues(['' => 'bar']);
     }
 
     public function testWhere(): void

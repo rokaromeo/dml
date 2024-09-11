@@ -24,18 +24,20 @@ final class Update
         return $this->table;
     }
 
-    public function setValue(string|array $field, $value = null): self
+    public function setValue(string $field, $value = null): self
     {
-        if (! is_array($field)) {
-            $field = [$field => $value];
+        if (strlen($field) === 0) {
+            throw new UpdateException('Zero length field name');
         }
 
-        foreach ($field as $key => $value) {
-            if ($value === '') {
-                $value = null;
-            }
+        $this->data[$field] = $value;
+        return $this;
+    }
 
-            $this->data[$key] = $value;
+    public function setValues(array $fields_and_values): self
+    {
+        foreach ($fields_and_values as $field => $value) {
+            $this->setValue($field, $value);
         }
 
         return $this;

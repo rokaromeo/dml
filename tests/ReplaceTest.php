@@ -62,6 +62,15 @@ final class ReplaceTest extends TestCase
         $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
     }
 
+    public function testSetValues_Exception_ZeroLengthFieldName(): void
+    {
+        $this->expectException(ReplaceException::class);
+        $this->expectExceptionMessage('Zero length field name');
+
+        $replace = new Replace();
+        $replace->setValues(['' => 'bar']);
+    }
+
     public function testGetValue(): void
     {
         $replace = new Replace();
