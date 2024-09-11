@@ -7,6 +7,7 @@ final class Insert
     protected string $table;
     protected array $fields = [];
     protected array $values = [];
+    protected array $on_duplicate_key_update = [];
 
     public function table(string $table): self
     {
@@ -80,5 +81,40 @@ final class Insert
     public function getRowCount(): int
     {
         return count($this->values);
+    }
+
+    public function onDuplicateKeyUpdateFields(string ...$fields): self
+    {
+        $this->on_duplicate_key_update = [];
+
+        foreach ($fields as $field) {
+            if (! $this->hasField($field)) {
+                throw new InsertException(sprintf('Field is not set: "%s"', $field));
+            }
+
+            $this->on_duplicate_key_update[$field] = null;
+        }
+
+        return $this;
+    }
+
+    public function onDuplicateKeyUpdateValues(array $fields_and_values): self
+    {
+        $this->on_duplicate_key_update = [];
+
+        foreach ($fields_and_values as $field => $value) {
+            if (! $this->hasField($field)) {
+                throw new InsertException(sprintf('Field is not set: "%s"', $field));
+            }
+
+            $this->on_duplicate_key_update[$field] = $value;
+        }
+
+        return $this;
+    }
+
+    public function getOnDuplicateKeyUpdate(): array
+    {
+        return $this->on_duplicate_key_update;
     }
 }
