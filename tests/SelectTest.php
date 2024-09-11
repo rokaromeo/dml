@@ -61,4 +61,41 @@ final class SelectTest extends TestCase
         $select = new Select();
         $select->from('');
     }
+
+    public function testJoin(): void
+    {
+        $select = new Select();
+        $select->join('foo');
+        $this->assertSame(['foo'], $select->getJoins());
+        $select->join('bar');
+        $this->assertSame(['foo', 'bar'], $select->getJoins());
+    }
+
+    public function testLeftJoin(): void
+    {
+        $select = new Select();
+        $select->leftJoin('foo');
+        $this->assertSame(['foo'], $select->getJoins());
+        $select->leftJoin('bar');
+        $this->assertSame(['foo', 'bar'], $select->getJoins());
+    }
+
+    public function testGetJoin(): void
+    {
+        $select = new Select();
+        $select->join('foo');
+        $select->join('bar');
+        $this->assertSame('foo', $select->getJoin(0));
+        $this->assertSame('bar', $select->getJoin(1));
+    }
+
+    public function testGetJoin_Exception_JoinNotSet(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Join not set: "1"');
+
+        $select = new Select();
+        $select->join('foo');
+        $select->getJoin(1);
+    }
 }

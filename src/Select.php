@@ -6,6 +6,7 @@ final class Select
 {
     protected array $fields = ['*'];
     protected string $from;
+    protected array $joins = [];
 
     public function setFields(string ...$fields): self
     {
@@ -46,5 +47,31 @@ final class Select
     public function getFrom(): string
     {
         return $this->from;
+    }
+
+    public function join(string $join): self
+    {
+        $this->joins[] = $join;
+        return $this;
+    }
+
+    public function leftJoin(string $join): self
+    {
+        $this->joins[] = $join;
+        return $this;
+    }
+
+    public function getJoins(): array
+    {
+        return $this->joins;
+    }
+
+    public function getJoin(int|string $join_id): string
+    {
+        if (! array_key_exists($join_id, $this->getJoins())) {
+            throw new SelectException(sprintf('Join not set: "%s"', $join_id));
+        }
+
+        return $this->getJoins()[$join_id];
     }
 }
