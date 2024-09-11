@@ -23,7 +23,7 @@ final class UpdateTest extends TestCase
 
     public function testTable_Exception_ZeroLengthTable(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(UpdateException::class);
         $this->expectExceptionMessage('Zero length table name');
 
         $update = new Update();
@@ -45,7 +45,7 @@ final class UpdateTest extends TestCase
 
     public function testGetValue_Exception_FieldNotSet(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(UpdateException::class);
         $this->expectExceptionMessage('Field not set: "foo"');
 
         $update = new Update();
@@ -63,7 +63,7 @@ final class UpdateTest extends TestCase
 
     public function testWhere_Exception_ZeroLengthWhere(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(UpdateException::class);
         $this->expectExceptionMessage('Zero length WHERE');
 
         $update = new Update();
@@ -89,7 +89,7 @@ final class UpdateTest extends TestCase
 
     public function testSetLimit_Exception_NegativeLimit(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(UpdateException::class);
         $this->expectExceptionMessage('Negative LIMIT');
 
         $update = new Update();

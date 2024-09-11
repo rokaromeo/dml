@@ -22,7 +22,7 @@ final class DeleteTest extends TestCase
 
     public function testFrom_Exception_ZeroLengthFrom(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(DeleteException::class);
         $this->expectExceptionMessage('Zero length FROM');
 
         $delete = new Delete();
@@ -40,7 +40,7 @@ final class DeleteTest extends TestCase
 
     public function testWhere_Exception_ZeroLengthWhere(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(DeleteException::class);
         $this->expectExceptionMessage('Zero length WHERE');
 
         $delete = new Delete();
@@ -66,7 +66,7 @@ final class DeleteTest extends TestCase
 
     public function testSetLimit_Exception_NegativeLimit(): void
     {
-        $this->expectException(SelectException::class);
+        $this->expectException(DeleteException::class);
         $this->expectExceptionMessage('Negative LIMIT');
 
         $delete = new Delete();

@@ -11,7 +11,7 @@ final class Delete
     public function from(string $from): self
     {
         if (strlen($from) === 0) {
-            throw new SelectException('Zero length FROM');
+            throw new DeleteException('Zero length FROM');
         }
 
         $this->from = $from;
@@ -26,7 +26,7 @@ final class Delete
     public function where(string $where): self
     {
         if (strlen($where) === 0) {
-            throw new SelectException('Zero length WHERE');
+            throw new DeleteException('Zero length WHERE');
         }
 
         $this->where[] = $where;
@@ -41,7 +41,7 @@ final class Delete
     public function setLimit(?int $limit = null): self
     {
         if ($limit < 0) {
-            throw new SelectException('Negative LIMIT');
+            throw new DeleteException('Negative LIMIT');
         }
 
         $this->limit = $limit;

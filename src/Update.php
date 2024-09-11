@@ -12,7 +12,7 @@ final class Update
     public function table(string $table): self
     {
         if (strlen($table) === 0) {
-            throw new SelectException('Zero length table name');
+            throw new UpdateException('Zero length table name');
         }
 
         $this->table = $table;
@@ -44,7 +44,7 @@ final class Update
     public function getValue(string $field)
     {
         if (! array_key_exists($field, $this->data)) {
-            throw new SelectException(sprintf('Field not set: "%s"', $field));
+            throw new UpdateException(sprintf('Field not set: "%s"', $field));
         }
 
         return $this->data[$field];
@@ -58,7 +58,7 @@ final class Update
     public function where(string $where): self
     {
         if (strlen($where) === 0) {
-            throw new SelectException('Zero length WHERE');
+            throw new UpdateException('Zero length WHERE');
         }
 
         $this->where[] = $where;
@@ -73,7 +73,7 @@ final class Update
     public function setLimit(?int $limit = null): self
     {
         if ($limit < 0) {
-            throw new SelectException('Negative LIMIT');
+            throw new UpdateException('Negative LIMIT');
         }
 
         $this->limit = $limit;
