@@ -10,7 +10,7 @@ final class Select
     {
         foreach ($fields as $field) {
             if (strlen($field) === 0) {
-                throw new SelectException('Zero length field in Select statement');
+                throw new SelectException('Zero length field');
             }
         }
 
@@ -21,5 +21,14 @@ final class Select
     public function GetFields(): array
     {
         return $this->fields;
+    }
+
+    public function getField(int|string $field_id): string
+    {
+        if (! array_key_exists($field_id, $this->getFields())) {
+            throw new SelectException(sprintf('Field id is not set: "%s"', $field_id));
+        }
+
+        return $this->getFields()[$field_id];
     }
 }
