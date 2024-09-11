@@ -16,4 +16,4 @@ script:
   - vendor/bin/phpunit --no-progress --coverage-clover build/clover.xml
 
 after_success:
-  - travis_retry php vendor/bin/php-coveralls --no-interaction --env=test --coverage_clover=COVERAGE_CLOVER
+  - travis_retry php vendor/bin/php-coveralls --no-interaction --env=test --coverage_clover=build/clover.xml
