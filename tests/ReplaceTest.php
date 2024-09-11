@@ -31,15 +31,6 @@ final class ReplaceTest extends TestCase
         $replace->table('');
     }
 
-    public function testInsertException(): void
-    {
-        $this->expectException(InsertException::class);
-        $this->expectExceptionMessage('Zero length table name');
-
-        $replace = new Replace();
-        $replace->table('');
-    }
-
     public function testSetValue(): void
     {
         $replace = new Replace();
