@@ -10,6 +10,12 @@ final class SelectTest extends TestCase
     {
         $select = new Select();
         $this->assertSame(['*'], $select->getFields());
+        $this->assertSame([], $select->getJoins());
+        $this->assertSame([], $select->getWhere());
+        $this->assertSame(null, $select->getLimit());
+        $this->assertSame(false, $select->hasLimit());
+        $this->assertSame(1, $select->getPage());
+        $this->assertSame(0, $select->getOffset());
     }
 
     public function testSetFields(): void
@@ -17,6 +23,8 @@ final class SelectTest extends TestCase
         $select = new Select();
         $select->setFields('foo', 'bar');
         $this->assertSame(['foo', 'bar'], $select->getFields());
+        $select->setFields('Alice', 'Bob');
+        $this->assertSame(['Alice', 'Bob'], $select->getFields());
     }
 
     public function testSetFields_Exception_ZeroLengthField(): void
@@ -120,8 +128,8 @@ final class SelectTest extends TestCase
     {
         $select = new Select();
         $select->join('foo');
-        $select->join('bar');
         $this->assertSame('foo', $select->getJoin(0));
+        $select->join('bar');
         $this->assertSame('bar', $select->getJoin(1));
     }
 
@@ -133,5 +141,145 @@ final class SelectTest extends TestCase
         $select = new Select();
         $select->join('foo');
         $select->getJoin(1);
+    }
+
+    public function testWhere(): void
+    {
+        $select = new Select();
+        $select->where('foo');
+        $this->assertSame(['foo'], $select->getWhere());
+        $select->where('bar');
+        $this->assertSame(['foo', 'bar'], $select->getWhere());
+    }
+
+    public function testWhere_Exception_ZeroLengthWhere(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length WHERE');
+
+        $select = new Select();
+        $select->where('');
+    }
+
+    public function testGroupBy(): void
+    {
+        $select = new Select();
+        $select->groupBy('foo');
+        $this->assertSame('foo', $select->getGroupBy());
+        $select->groupBy('bar');
+        $this->assertSame('bar', $select->getGroupBy());
+    }
+
+    public function testGroupBy_Exception_ZeroLengthGroupBy(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length GROUP BY');
+
+        $select = new Select();
+        $select->groupBy('');
+    }
+
+    public function testHaving(): void
+    {
+        $select = new Select();
+        $select->having('foo');
+        $this->assertSame('foo', $select->getHaving());
+        $select->having('bar');
+        $this->assertSame('bar', $select->getHaving());
+    }
+
+    public function testHaving_Exception_ZeroLengthHaving(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length HAVING');
+
+        $select = new Select();
+        $select->having('');
+    }
+
+    public function testOrderBy(): void
+    {
+        $select = new Select();
+        $select->orderBy('foo');
+        $this->assertSame('foo', $select->getOrderBy());
+        $select->orderBy('bar');
+        $this->assertSame('bar', $select->getOrderBy());
+    }
+
+    public function testOrderBy_Exception_ZeroLengthOrderBy(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero length ORDER BY');
+
+        $select = new Select();
+        $select->orderBy('');
+    }
+
+    public function testSetLimit(): void
+    {
+        $select = new Select();
+        $select->setLimit(1);
+        $this->assertSame(1, $select->getLimit());
+        $this->assertSame(true, $select->hasLimit());
+        $select->setLimit(2);
+        $this->assertSame(2, $select->getLimit());
+        $this->assertSame(true, $select->hasLimit());
+        $select->setLimit(0);
+        $this->assertSame(0, $select->getLimit());
+        $this->assertSame(true, $select->hasLimit());
+        $select->setLimit();
+        $this->assertSame(null, $select->getLimit());
+        $this->assertSame(false, $select->hasLimit());
+    }
+
+    public function testSetLimit_Exception_NegativeLimit(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Negative LIMIT');
+
+        $select = new Select();
+        $select->setLimit(-1);
+    }
+
+    public function testSetPage(): void
+    {
+        $select = new Select();
+        $select->setPage(2);
+        $this->assertSame(2, $select->getPage());
+        $select->setPage(3);
+        $this->assertSame(3, $select->getPage());
+
+        $select = new Select();
+        $select->setLimit(10);
+        $select->setPage(3);
+        $this->assertSame(20, $select->getOffset());
+        $select->setPage(4);
+        $this->assertSame(30, $select->getOffset());
+        $select->setLimit(0);
+        $this->assertSame(30, $select->getOffset());
+        $select->setLimit();
+        $this->assertSame(0, $select->getOffset());
+        $this->assertSame(1, $select->getPage());
+    }
+
+    public function testSetPage_Exception_ZeroPage(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Zero page');
+
+        $select = new Select();
+        $select->setPage(0);
+    }
+
+    public function testSetOffset(): void
+    {
+        $select = new Select();
+        $select->setLimit(10);
+        $select->setPage(5);
+        $this->assertSame(40, $select->getOffset());
+        $select->setPage(6);
+        $this->assertSame(50, $select->getOffset());
+        $select->setLimit();
+        $this->assertSame(0, $select->getOffset());
     }
 }
