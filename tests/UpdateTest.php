@@ -11,6 +11,7 @@ final class UpdateTest extends TestCase
         $update = new Update();
         $this->assertSame([], $update->getFields());
         $this->assertSame(false, $update->hasField());
+        $this->assertSame(false, $update->hasField('foo'));
         $this->assertSame([], $update->getValues());
         $this->assertSame([], $update->getWhere());
         $this->assertSame(null, $update->getLimit());
@@ -39,7 +40,6 @@ final class UpdateTest extends TestCase
         $this->assertSame(['foo'], $update->getFields());
         $this->assertSame(true, $update->hasField());
         $this->assertSame(true, $update->hasField('foo'));
-        $this->assertSame(false, $update->hasField('Alice'));
         $this->assertSame(['foo' => 'bar'], $update->getValues());
 
         $update->setValue('Alice', 'Bob');

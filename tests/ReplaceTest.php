@@ -12,6 +12,7 @@ final class ReplaceTest extends TestCase
         $this->assertSame([], $replace->getValues());
         $this->assertSame([], $replace->getFields());
         $this->assertSame(false, $replace->hasField());
+        $this->assertSame(false, $replace->hasField('foo'));
     }
 
     public function testTable(): void
@@ -46,7 +47,6 @@ final class ReplaceTest extends TestCase
         $this->assertSame(['foo'], $replace->getFields());
         $this->assertSame(true, $replace->hasField());
         $this->assertSame(true, $replace->hasField('foo'));
-        $this->assertSame(false, $replace->hasField('Alice'));
         $this->assertSame(['foo' => 'bar'], $replace->getValues());
 
         $replace->setValue('Alice', 'Bob');
