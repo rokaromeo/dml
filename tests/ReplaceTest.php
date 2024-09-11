@@ -10,6 +10,8 @@ final class ReplaceTest extends TestCase
     {
         $replace = new Replace();
         $this->assertSame([], $replace->getValues());
+        $this->assertSame([], $replace->getFields());
+        $this->assertSame(false, $replace->hasField());
     }
 
     public function testTable(): void
@@ -41,9 +43,16 @@ final class ReplaceTest extends TestCase
     {
         $replace = new Replace();
         $replace->setValue('foo', 'bar');
+        $this->assertSame(['foo'], $replace->getFields());
+        $this->assertSame(true, $replace->hasField());
+        $this->assertSame(true, $replace->hasField('foo'));
+        $this->assertSame(false, $replace->hasField('Alice'));
         $this->assertSame(['foo' => 'bar'], $replace->getValues());
-        $replace->setValue('foo2', 'bar2');
-        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
+
+        $replace->setValue('Alice', 'Bob');
+        $this->assertSame(['foo', 'Alice'], $replace->getFields());
+        $this->assertSame(true, $replace->hasField('Alice'));
+        $this->assertSame(['foo' => 'bar', 'Alice' => 'Bob'], $replace->getValues());
     }
 
     public function testSetValue_Exception_ZeroLengthFieldName(): void
@@ -58,8 +67,8 @@ final class ReplaceTest extends TestCase
     public function testSetValues(): void
     {
         $replace = new Replace();
-        $replace->setValues(['foo' => 'bar', 'foo2' => 'bar2']);
-        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
+        $replace->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
+        $this->assertSame(['foo' => 'bar', 'Alice' => 'Bob'], $replace->getValues());
     }
 
     public function testSetValues_Exception_ZeroLengthFieldName(): void

@@ -9,6 +9,8 @@ final class UpdateTest extends TestCase
     public function testDefaults(): void
     {
         $update = new Update();
+        $this->assertSame([], $update->getFields());
+        $this->assertSame(false, $update->hasField());
         $this->assertSame([], $update->getValues());
         $this->assertSame([], $update->getWhere());
         $this->assertSame(null, $update->getLimit());
@@ -32,11 +34,17 @@ final class UpdateTest extends TestCase
 
     public function testSetValue(): void
     {
-        $replace = new Replace();
-        $replace->setValue('foo', 'bar');
-        $this->assertSame(['foo' => 'bar'], $replace->getValues());
-        $replace->setValue('foo2', 'bar2');
-        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
+        $update = new Update();
+        $update->setValue('foo', 'bar');
+        $this->assertSame(['foo'], $update->getFields());
+        $this->assertSame(true, $update->hasField());
+        $this->assertSame(true, $update->hasField('foo'));
+        $this->assertSame(['foo' => 'bar'], $update->getValues());
+
+        $update->setValue('Alice', 'Bob');
+        $this->assertSame(['foo', 'Alice'], $update->getFields());
+        $this->assertSame(true, $update->hasField('Alice'));
+        $this->assertSame(['foo' => 'bar', 'Alice' => 'Bob'], $update->getValues());
     }
 
     public function testSetValue_Exception_ZeroLengthFieldName(): void
@@ -51,8 +59,8 @@ final class UpdateTest extends TestCase
     public function testSetValues(): void
     {
         $replace = new Replace();
-        $replace->setValues(['foo' => 'bar', 'foo2' => 'bar2']);
-        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $replace->getValues());
+        $replace->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
+        $this->assertSame(['foo' => 'bar', 'Alice' => 'Bob'], $replace->getValues());
     }
 
     public function testSetValues_Exception_ZeroLengthFieldName(): void
