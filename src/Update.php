@@ -5,6 +5,7 @@ namespace Roka\DML;
 final class Update
 {
     protected string $table;
+    protected array $data = [];
     protected array $where = [];
     protected ?int $limit = null;
 
@@ -21,6 +22,37 @@ final class Update
     public function getTable(): string
     {
         return $this->table;
+    }
+
+    public function setValue(string|array $field, $value = null): self
+    {
+        if (! is_array($field)) {
+            $field = [$field => $value];
+        }
+
+        foreach ($field as $key => $value) {
+            if ($value === '') {
+                $value = null;
+            }
+
+            $this->data[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    public function getValue(string $field)
+    {
+        if (! array_key_exists($field, $this->data)) {
+            throw new SelectException(sprintf('Field not set: "%s"', $field));
+        }
+
+        return $this->data[$field];
+    }
+
+    public function getValues(): array
+    {
+        return $this->data;
     }
 
     public function where(string $where): self

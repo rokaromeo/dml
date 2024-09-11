@@ -9,6 +9,7 @@ final class UpdateTest extends TestCase
     public function testDefaults(): void
     {
         $update = new Update();
+        $this->assertSame([], $update->getValues());
         $this->assertSame([], $update->getWhere());
         $this->assertSame(null, $update->getLimit());
     }
@@ -27,6 +28,28 @@ final class UpdateTest extends TestCase
 
         $update = new Update();
         $update->table('');
+    }
+
+    public function testSetValue(): void
+    {
+        $update = new Update();
+        $update->setValue('foo', 'bar');
+        $this->assertSame(['foo' => 'bar'], $update->getValues());
+        $update->setValue('foo2', 'bar2');
+        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $update->getValues());
+
+        $update = new Update();
+        $update->setValue(['foo' => 'bar', 'foo2' => 'bar2']);
+        $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $update->getValues());
+    }
+
+    public function testGetValue_Exception_FieldNotSet(): void
+    {
+        $this->expectException(SelectException::class);
+        $this->expectExceptionMessage('Field not set: "foo"');
+
+        $update = new Update();
+        $update->getValue('foo');
     }
 
     public function testWhere(): void
