@@ -18,4 +18,12 @@ final class SelectTest extends TestCase
         $select->setFields('foo', 'bar');
         $this->assertSame(['foo', 'bar'], $select->getFields());
     }
+
+    public function testSetFieldsZeroLength(): void
+    {
+        $this->expectException(SelectException::class);
+
+        $select = new Select();
+        $select->setFields('foo', '');
+    }
 }

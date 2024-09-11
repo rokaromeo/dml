@@ -8,6 +8,12 @@ final class Select
 
     public function setFields(string ...$fields): self
     {
+        foreach ($fields as $field) {
+            if (strlen($field) === 0) {
+                throw new SelectException('Zero length field in Select statement');
+            }
+        }
+
         $this->fields = $fields;
         return $this;
     }
