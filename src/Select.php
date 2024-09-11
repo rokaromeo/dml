@@ -6,7 +6,13 @@ final class Select
 {
     protected array $fields = ['*'];
 
-    public function GetFields()
+    public function setFields(string ...$fields): self
+    {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    public function GetFields(): array
     {
         return $this->fields;
     }
