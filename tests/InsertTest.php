@@ -13,6 +13,7 @@ final class InsertTest extends TestCase
         $this->assertSame(false, $insert->hasField());
         $this->assertSame(false, $insert->hasField('foo'));
         $this->assertSame([], $insert->getValues());
+        $this->assertSame(0, $insert->getRowCount());
     }
 
     public function testTable(): void
@@ -39,11 +40,13 @@ final class InsertTest extends TestCase
         $this->assertSame(true, $insert->hasField());
         $this->assertSame(true, $insert->hasField('foo'));
         $this->assertSame([['foo' => 'bar']], $insert->getValues());
+        $this->assertSame(1, $insert->getRowCount());
 
         $insert->setValue('Alice', 'Bob');
         $this->assertSame(['foo', 'Alice'], $insert->getFields());
         $this->assertSame(true, $insert->hasField('Alice'));
         $this->assertSame([['foo' => 'bar', 'Alice' => 'Bob']], $insert->getValues());
+        $this->assertSame(1, $insert->getRowCount());
     }
 
     public function testSetValue_Exception_ZeroLengthFieldName(): void
@@ -55,10 +58,29 @@ final class InsertTest extends TestCase
         $insert->setValue('', 'bar');
     }
 
-    // public function testSetValues(): void
-    // {
-    //     $insert = new Insert();
-    //     $insert->setValues(['foo' => 'bar', 'foo2' => 'bar2']);
-    //     $this->assertSame(['foo' => 'bar', 'foo2' => 'bar2'], $insert->getValues());
-    // }
+    public function testSetValues(): void
+    {
+        $insert = new Insert();
+        $insert->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
+        $this->assertSame([['foo' => 'bar', 'Alice' => 'Bob']], $insert->getValues());
+        $this->assertSame(1, $insert->getRowCount());
+
+        // Overwrite
+        $insert->setValues(['foo' => 'row2_column1', 'Alice' => 'row2_column2']);
+        $this->assertSame([['foo' => 'row2_column1', 'Alice' => 'row2_column2']], $insert->getValues());
+        $this->assertSame(['foo', 'Alice'], $insert->getFields());
+        $this->assertSame(1, $insert->getRowCount());
+
+        $insert = new Insert();
+        $insert->setValues([
+                    ['foo' => 'bar',          'Alice' => 'Bob'],
+                    ['foo' => 'row2_column1', 'Alice' => 'row2_column2']
+                ]);
+        $this->assertSame([
+                    ['foo' => 'bar',          'Alice' => 'Bob'],
+                    ['foo' => 'row2_column1', 'Alice' => 'row2_column2']
+                ], $insert->getValues());
+        $this->assertSame(['foo', 'Alice'], $insert->getFields());
+        $this->assertSame(2, $insert->getRowCount());
+    }
 }

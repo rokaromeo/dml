@@ -50,9 +50,9 @@ final class Insert
 
     public function setValues(array $fields_and_values, int $row_index = 0): self
     {
-        $rows = $fields_and_values;
+        $rows = [$fields_and_values];
         if (is_array($fields_and_values) && is_array(reset($fields_and_values))) {
-            $rows = reset($fields_and_values);
+            $rows = reset($rows);
         }
 
         foreach ($rows as $row_index => $row) {
@@ -67,5 +67,10 @@ final class Insert
     public function getValues(): array
     {
         return $this->values;
+    }
+
+    public function getRowCount(): int
+    {
+        return count($this->values);
     }
 }
