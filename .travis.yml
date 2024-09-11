@@ -13,7 +13,7 @@ install:
   - composer install --no-progress --no-interaction --no-suggest
 
 script:
-  - ./vendor/bin/phpunit --no-progress --coverage-clover build/clover.xml
+  - vendor/bin/phpunit --no-progress --coverage-clover build/clover.xml
 
 after_success:
-  - travis_retry php vendor/bin/php-coveralls
+  - travis_retry php vendor/bin/php-coveralls --no-interaction --env=test --coverage_clover=COVERAGE_CLOVER
