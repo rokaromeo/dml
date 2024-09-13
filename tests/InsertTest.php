@@ -137,16 +137,18 @@ final class InsertTest extends TestCase
         $insert->onDuplicateKeyUpdate('foo');
     }
 
-    public function testGetSQL(): void
+    public function testGetSQLGetData(): void
     {
         $insert = new Insert();
         $insert->table('foo');
         $insert->setValues(['foo' => 'bar']);
         $this->assertSame('INSERT INTO `foo` (`foo`) VALUES (:foo)', $insert->getSQL());
+        $this->assertSame(['foo' => 'bar'], $insert->getData());
 
         $insert->ignore();
         $insert->setValues(['foo' => 'bar', 'Alice' => 'Bob']);
         $this->assertSame('INSERT IGNORE INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice)', $insert->getSQL());
+        $this->assertSame(['foo' => 'bar', 'Alice' => 'Bob'], $insert->getData());
 
         $insert = new Insert();
         $insert->table('foo');
@@ -154,9 +156,24 @@ final class InsertTest extends TestCase
                     ['foo' => 'bar',          'Alice' => 'Bob'],
                     ['foo' => 'row2_column1', 'Alice' => 'row2_column2']
                 ]);
-        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo1, :Alice1)', $insert->getSQL());
+        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo_1, :Alice_1)', $insert->getSQL());
+        $this->assertSame([
+                    'foo'  => 'bar',          'Alice'  => 'Bob',
+                    'foo_1' => 'row2_column1', 'Alice_1' => 'row2_column2'
+                ], $insert->getData());
 
         $insert->onDuplicateKeyUpdate('foo');
-        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo1, :Alice1) ON DUPLICATE KEY UPDATE `foo` = values(`foo`)', $insert->getSQL());
+        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo_1, :Alice_1) ON DUPLICATE KEY UPDATE `foo` = values(`foo`)', $insert->getSQL());
+        $this->assertSame(['foo' => 'bar', 'Alice'  => 'Bob', 'foo_1' => 'row2_column1', 'Alice_1' => 'row2_column2'], $insert->getData());
+
+        $insert->onDuplicateKeyUpdate(['foo' => 'baz']);
+        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo_1, :Alice_1) ON DUPLICATE KEY UPDATE `foo` = :foo_u', $insert->getSQL());
+        $this->assertSame(['foo' => 'bar', 'Alice'  => 'Bob', 'foo_1' => 'row2_column1', 'Alice_1' => 'row2_column2', 'foo_u' => 'baz'], $insert->getData());
+
+        $insert = new Insert();
+        $insert->table('foo');
+        $insert->setValues(['foo' => 'bar']);
+        $insert->onDuplicateKeyUpdateSQL(['foo' => 'CONCAT(`foo`, "bar")']);
+        $this->assertSame('INSERT INTO `foo` (`foo`) VALUES (:foo) ON DUPLICATE KEY UPDATE `foo` = CONCAT(`foo`, "bar")', $insert->getSQL());
     }
 }

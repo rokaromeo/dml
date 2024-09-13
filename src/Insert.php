@@ -9,6 +9,7 @@ final class Insert
     protected array $fields = [];
     protected array $values = [];
     protected array $on_duplicate_key_update = [];
+    protected array $on_duplicate_key_sql = [];
 
     public function ignore(): self
     {
@@ -111,6 +112,8 @@ final class Insert
             foreach ($fields as $field) {
                 $fields_and_values[$field] = sprintf('values(`%s`)', $field);
             }
+
+            return $this->onDuplicateKeyUpdateSQL($fields_and_values);
         }
 
         if (is_array($field)) {
@@ -123,6 +126,21 @@ final class Insert
             }
 
             $this->on_duplicate_key_update[$field] = $value;
+            $this->on_duplicate_key_sql[$field] = false;
+        }
+
+        return $this;
+    }
+
+    public function onDuplicateKeyUpdateSQL(array $fields_and_values): self
+    {
+        foreach ($fields_and_values as $field => $value) {
+            if (! $this->hasField($field)) {
+                throw new InsertException(sprintf('Field is not set: "%s"', $field));
+            }
+
+            $this->on_duplicate_key_update[$field] = $value;
+            $this->on_duplicate_key_sql[$field] = true;
         }
 
         return $this;
@@ -148,19 +166,50 @@ final class Insert
 
         $rows = [sprintf('(:%s)', implode(', :', $this->getFields()))];
         for ($i = 1; $i < $this->getRowCount(); $i++) {
-            $rows[$i] = sprintf('(:%s%d)', implode(sprintf('%d, :', $i), $this->getFields()), $i);
+            $rows[$i] = sprintf('(:%s_%d)', implode(sprintf('_%d, :', $i), $this->getFields()), $i);
         }
         $SQL[] = implode(', ', $rows);
 
         if ($this->getOnDuplicateKeyUpdate() !== []) {
             $rows = [];
             foreach ($this->getOnDuplicateKeyUpdate() as $field => $value) {
-                $rows[] = sprintf('`%s` = %s', $field, $value);
+                if ($this->on_duplicate_key_sql[$field] === true) {
+                    $rows[] = sprintf('`%s` = %s', $field, $value);
+                } else {
+                    $rows[] = sprintf('`%s` = :%s_u', $field, $field);
+                }
             }
 
             $SQL[] = ' ON DUPLICATE KEY UPDATE ' . implode(', ', $rows);
         }
 
         return implode('', $SQL);
+    }
+
+    public function getData(): array
+    {
+        $result = [];
+
+        foreach ($this->getValues() as $row_index => $fields_and_values) {
+            foreach ($fields_and_values as $field => $value) {
+                if ($row_index > 0) {
+                    $field = $field . '_' . $row_index;
+                }
+
+                $result[$field] = $value;
+            }
+        }
+
+        foreach ($this->getOnDuplicateKeyUpdate() as $field => $value) {
+            if ($this->on_duplicate_key_sql[$field] === true) {
+                // $result[$field] = $value;
+                continue;
+            }
+
+            $field = $field . '_u';
+            $result[$field] = $value;
+        }
+
+        return $result;
     }
 }
