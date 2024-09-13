@@ -150,8 +150,16 @@ final class Insert
         for ($i = 1; $i < $this->getRowCount(); $i++) {
             $rows[$i] = sprintf('(:%s%d)', implode(sprintf('%d, :', $i), $this->getFields()), $i);
         }
-
         $SQL[] = implode(', ', $rows);
+
+        if ($this->getOnDuplicateKeyUpdate() !== []) {
+            $rows = [];
+            foreach ($this->getOnDuplicateKeyUpdate() as $field => $value) {
+                $rows[] = sprintf('`%s` = %s', $field, $value);
+            }
+
+            $SQL[] = ' ON DUPLICATE KEY UPDATE ' . implode(', ', $rows);
+        }
 
         return implode('', $SQL);
     }

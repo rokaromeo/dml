@@ -156,5 +156,7 @@ final class InsertTest extends TestCase
                 ]);
         $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo1, :Alice1)', $insert->getSQL());
 
+        $insert->onDuplicateKeyUpdate('foo');
+        $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo1, :Alice1) ON DUPLICATE KEY UPDATE `foo` = values(`foo`)', $insert->getSQL());
     }
 }
