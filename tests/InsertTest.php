@@ -158,7 +158,7 @@ final class InsertTest extends TestCase
                 ]);
         $this->assertSame('INSERT INTO `foo` (`foo`, `Alice`) VALUES (:foo, :Alice), (:foo_1, :Alice_1)', $insert->getSQL());
         $this->assertSame([
-                    'foo'  => 'bar',          'Alice'  => 'Bob',
+                    'foo'   => 'bar',          'Alice'   => 'Bob',
                     'foo_1' => 'row2_column1', 'Alice_1' => 'row2_column2'
                 ], $insert->getData());
 
